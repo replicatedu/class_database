@@ -1,0 +1,16 @@
+[package]
+name = "class_database"
+version = "0.1.0"
+authors = ["alex <hortinstein@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+class_crypto = { git = "https://github.com/replicatedu/class_crypto.git" }
+hex = "*"
+[dev-dependencies]
+
+[profile.release]
+opt-level = 'z'     # Optimize for size.
+lto = true          # Enable Link Time Optimization
+codegen-units = 1   # Reduce number of codegen units to increase optimizations.
+panic = 'abort'     # Abort on panic

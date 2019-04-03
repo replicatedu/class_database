@@ -10,3 +10,5 @@ ADD class_database root/
 RUN git config --global user.email "STUDENT_DATABASE"
 RUN git config --global user.name "STUDENT_DATABASE"
 
+WORKDIR root/
+

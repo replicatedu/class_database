@@ -35,10 +35,8 @@ fn command_wrapper(test_command: &str, command_directory: &str) -> Command {
     command
 }
 
-
 //rsa key generation
 //ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N '' -t rsa
-
 pub fn gen_rsa_keys(){
     let command = "rm -rf ./deploy_key* && \
                    ssh-keygen -f ./deploy_key -N '' -t rsa && \
@@ -56,16 +54,6 @@ pub fn gen_rsa_keys(){
     println!("{}",String::from_utf8_lossy(&c.output().unwrap().stdout));
 
 }
-
-
-pub fn prompt() -> ClassDatabase {
-    println!("Please enter ssh repo address [ie git@github.com:replicatedu/test_database.git]");
-    let mut repo_address = String::new();
-    io::stdin().read_line(&mut repo_address)
-        .expect("Failed to read repo address");
-    ClassDatabase::new(&repo_address)
-}
-
 
 //holds data for instructor and students
 pub struct ClassDatabase {
@@ -126,12 +114,7 @@ impl ClassDatabase {
         let mut c = command_wrapper(&command, "/tmp/test_database");
         println!("{}",String::from_utf8_lossy(&c.output().unwrap().stdout));
     }
-    pub fn create_repo(&self){
-        let mut command: String = "curl -u 'hortinstein' https://api.github.com/user/repos -d '{\"name\":\"REPOs\"}'".to_owned();
-        
-        let mut c = command_wrapper(&command, "/tmp/");
-        println!("{}",String::from_utf8_lossy(&c.output().unwrap().stdout));
-    }
+
 }
 pub fn time_since_epoch() -> String {
     let start = SystemTime::now();

@@ -4,16 +4,8 @@ use std::io;
 
 use std::process::{Command};
 
-#[macro_use]
-extern crate serde_derive;
-extern crate toml;
-
 use hex;
-use class_crypto::{ClassCrypto};
 use std::time::{SystemTime, UNIX_EPOCH};
-
-//use hubcaps::repositories::{RepoOptions};
-
 
 //returns a command setup ready to run the tests
 fn command_wrapper(test_command: &str, command_directory: &str) -> Command {
@@ -70,7 +62,8 @@ impl ClassDatabase {
  
     pub fn pull_class_database(&self) {
         let owned_string: String = "git clone ".to_owned();
-        let command = owned_string + &self.repo_address;
+        let mut command = owned_string + &self.repo_address;
+        command += " class_database";
         println!("running: {}",command);
         let mut c = command_wrapper(&command, "/tmp");
         c.output();
@@ -91,7 +84,7 @@ impl ClassDatabase {
         command+="echo \"Host *\" > ~/.ssh/config && ";
         command+="echo \" StrictHostKeyChecking no\" >> ~/.ssh/config";
         println!("running: {}",command);
-        let mut c = command_wrapper(&command, "/tmp/test_database");
+        let mut c = command_wrapper(&command, "/tmp/class_database");
         println!("{}",String::from_utf8_lossy(&c.output().unwrap().stdout));
     
     }
@@ -105,13 +98,13 @@ impl ClassDatabase {
         command += " && git commit -a -m \"added a new file\" ";
         command += "&& git push origin master";
         println!("running: {}",command);
-        let mut c = command_wrapper(&command, "/tmp/test_database");
+        let mut c = command_wrapper(&command, "/tmp/class_database");
         println!("{}",String::from_utf8_lossy(&c.output().unwrap().stdout));
     }
 
     pub fn prune_files(&self){
         let mut command: String = "find . -not -name .git -exec rm -vf {} \\;".to_owned();
-        let mut c = command_wrapper(&command, "/tmp/test_database");
+        let mut c = command_wrapper(&command, "/tmp/class_database");
         println!("{}",String::from_utf8_lossy(&c.output().unwrap().stdout));
     }
 

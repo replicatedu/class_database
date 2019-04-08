@@ -1,6 +1,7 @@
 use std::fs;
 use std::fs::OpenOptions;
 use std::io;
+use std::io::Write;
 
 use std::process::{Command};
 
@@ -25,6 +26,23 @@ fn command_wrapper(test_command: &str, command_directory: &str) -> Command {
     };
     command.current_dir(command_directory);
     command
+}
+
+pub fn write_file(filepath: &str, contents: &str) {
+    match OpenOptions::new()
+        .create(true)
+        .write(true)
+        .append(true)
+        .open(filepath)
+    {
+        Ok(ref mut file) => {
+            file.set_len(0);
+            writeln!(file, "{}",contents).unwrap();
+        }
+        Err(err) => {
+            panic!("Failed to open log file: {}", err);
+        }
+    }
 }
 
 //rsa key generation
@@ -61,12 +79,17 @@ impl ClassDatabase {
     }
  
     pub fn pull_class_database(&self) {
-        let owned_string: String = "git clone ".to_owned();
+        let owned_string: String = "rm -rf /tmp/class_database && git clone ".to_owned();
         let mut command = owned_string + &self.repo_address;
         command += " class_database";
         println!("running: {}",command);
         let mut c = command_wrapper(&command, "/tmp");
-        c.output();
+        let c_out = c.output().expect("gen_rsa_keys failed");
+        println!(
+            "STD_OUT\n{}\nSTDERR\n{}",
+            String::from_utf8_lossy(&c_out.stdout),
+            String::from_utf8_lossy(&c_out.stderr)
+        );
     }
 
     pub fn turn_off_host_checks(){
@@ -75,7 +98,12 @@ impl ClassDatabase {
         command+="echo \" StrictHostKeyChecking no\" >> ~/.ssh/config";
         println!("running: {}",command);
         let mut c = command_wrapper(&command, "/");
-        println!("{}",String::from_utf8_lossy(&c.output().unwrap().stdout));
+        let c_out = c.output().expect("gen_rsa_keys failed");
+        println!(
+            "STD_OUT\n{}\nSTDERR\n{}",
+            String::from_utf8_lossy(&c_out.stdout),
+            String::from_utf8_lossy(&c_out.stderr)
+        );
     
     }
 
@@ -85,27 +113,42 @@ impl ClassDatabase {
         command+="echo \" StrictHostKeyChecking no\" >> ~/.ssh/config";
         println!("running: {}",command);
         let mut c = command_wrapper(&command, "/tmp/class_database");
-        println!("{}",String::from_utf8_lossy(&c.output().unwrap().stdout));
+        let c_out = c.output().expect("gen_rsa_keys failed");
+        println!(
+            "STD_OUT\n{}\nSTDERR\n{}",
+            String::from_utf8_lossy(&c_out.stdout),
+            String::from_utf8_lossy(&c_out.stderr)
+        );
     
     }
 
     pub fn add_file(&self,filename: &str){
         let mut command: String = "touch ".to_owned();
         command += &filename;
-        command += " && git pull ";
+        command += " && git pull";
         command += " && git add ";
         command += &filename;
         command += " && git commit -a -m \"added a new file\" ";
         command += "&& git push origin master";
         println!("running: {}",command);
         let mut c = command_wrapper(&command, "/tmp/class_database");
-        println!("{}",String::from_utf8_lossy(&c.output().unwrap().stdout));
+        let c_out = c.output().expect("gen_rsa_keys failed");
+        println!(
+            "STD_OUT\n{}\nSTDERR\n{}",
+            String::from_utf8_lossy(&c_out.stdout),
+            String::from_utf8_lossy(&c_out.stderr)
+        );
     }
 
     pub fn prune_files(&self){
         let mut command: String = "find . -not -name .git -exec rm -vf {} \\;".to_owned();
         let mut c = command_wrapper(&command, "/tmp/class_database");
-        println!("{}",String::from_utf8_lossy(&c.output().unwrap().stdout));
+        let c_out = c.output().expect("gen_rsa_keys failed");
+        println!(
+            "STD_OUT\n{}\nSTDERR\n{}",
+            String::from_utf8_lossy(&c_out.stdout),
+            String::from_utf8_lossy(&c_out.stderr)
+        );
     }
 
 }
